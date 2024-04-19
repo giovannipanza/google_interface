@@ -80,6 +80,7 @@
                         setLocalStorageItem("formCompleted", "1"); // Imposta il Local Storage per segnalare il completamento
                         alert("Il tempo è scaduto! Il form verrà chiuso.");
                         document.getElementById('googleForm').style.display = 'none';
+                        document.write('<div id="warningMessage">Tempo scaduto!</div>');
                     }
                 }, 1000); // Intervallo di un secondo
 
