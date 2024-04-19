@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Form con Timer</title>
+    <style>
+        /* Stili per centrare il form e il timer nella pagina */
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #f4f4f4; /* Colore di sfondo leggero */
+        }
+        #googleForm {
+            border: none; /* Rimuove il bordo dell'iframe */
+            width: 640px;
+            height: 520px;
+        }
+        #timer {
+            margin-top: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+        #warningMessage {
+            color: red;
+            font-size: 20px;
+            margin-top: 10px;
+            display: none; /* Nascosto di default */
+        }
+        #accessDenied {
+            color: red;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        // Funzioni per gestire Local Storage
+        function setLocalStorageItem(key, value) {
+            localStorage.setItem(key, value);
+        }
+
+        function getLocalStorageItem(key) {
+            return localStorage.getItem(key);
+        }
+
+        // Controlla se l'utente ha già completato il form
+        if(getLocalStorageItem("formCompleted") === "1") {
+            document.write('<div id="accessDenied">Non puoi più ritentare il questionario.</div>');
+        } else {
+            document.write('<iframe id="googleForm" src="https://docs.google.com/forms/d/e/1FAIpQLSffd8Efs-9jNazpI_1T2LuMg_nTwugX6VZrT-DZ9ZHsaehJRw/viewform?usp=sf_link">Loading...</iframe>');
+            document.write('<div id="timer">3:00</div>');
+            document.write('<div id="warningMessage">Tempo quasi scaduto, invia i dati!</div>');
+        }
+    </script>
+    <script>
+        if (getLocalStorageItem("formCompleted") !== "1") {
+            document.addEventListener('DOMContentLoaded', function() {
+                let totalTime = 3; // Tempo totale in minuti
+                let secondsLeft = totalTime * 60; // Converti in secondi
+
+                const timerElement = document.getElementById('timer');
+                const warningElement = document.getElementById('warningMessage');
+                timerElement.textContent = formatTime(secondsLeft); // Imposta il testo iniziale del timer
+
+                const timerId = setInterval(function() {
+                    secondsLeft--;
+                    timerElement.textContent = formatTime(secondsLeft); // Aggiorna il display del timer
+
+                    if (secondsLeft <= 120) { // Quando mancano meno di 2 minuti
+                        warningElement.style.display = 'block'; // Mostra il messaggio di avviso
+                    }
+
+                    if (secondsLeft <= 0) {
+                        clearInterval(timerId);
+                        setLocalStorageItem("formCompleted", "1"); // Imposta il Local Storage per segnalare il completamento
+                        alert("Il tempo è scaduto! Il form verrà chiuso.");
+                        document.getElementById('googleForm').style.display = 'none';
+                    }
+                }, 1000); // Intervallo di un secondo
+
+                function formatTime(seconds) {
+                    let minutes = Math.floor(seconds / 60);
+                    let secondsRemain = seconds % 60;
+                    return minutes + ":" + (secondsRemain < 10 ? "0" : "") + secondsRemain; // Formatta MM:SS
+                }
+            });
+        }
+    </script>
+</body>
+</html>
