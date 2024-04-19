@@ -51,15 +51,16 @@
             document.write('<div id="accessDenied">Non puoi più ritentare il questionario.</div>');
         } else {
             document.write('<iframe id="googleForm" src="https://docs.google.com/forms/d/e/1FAIpQLSffd8Efs-9jNazpI_1T2LuMg_nTwugX6VZrT-DZ9ZHsaehJRw/viewform?usp=sf_link">Loading...</iframe>');
-            document.write('<div id="timer">3:00</div>');
+            document.write('<div id="timer">30:00</div>');
             document.write('<div id="warningMessage">Tempo quasi scaduto, invia i dati!</div>');
         }
     </script>
     <script>
         if (getLocalStorageItem("formCompleted") !== "1") {
             document.addEventListener('DOMContentLoaded', function() {
+                let initialTime = parseInt(getLocalStorageItem("remainingTime"), 10);
                 let totalTime = 3; // Tempo totale in minuti
-                let secondsLeft = totalTime * 60; // Converti in secondi
+                let secondsLeft = isNaN(initialTime) ? totalTime * 60 : initialTime; // Converti in secondi o riprendi il tempo salvato
 
                 const timerElement = document.getElementById('timer');
                 const warningElement = document.getElementById('warningMessage');
@@ -67,6 +68,7 @@
 
                 const timerId = setInterval(function() {
                     secondsLeft--;
+                    setLocalStorageItem("remainingTime", secondsLeft); // Salva il tempo rimanente in Local Storage
                     timerElement.textContent = formatTime(secondsLeft); // Aggiorna il display del timer
 
                     if (secondsLeft <= 120) { // Quando mancano meno di 2 minuti
